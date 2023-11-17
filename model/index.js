@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 const userModel = require('./userModel')
+const {mongodbPath}=require('../config/config.default')
 
 async function main(){
-        await  mongoose.connect('mongodb://localhost:27017/rexpress-video')
+        await  mongoose.connect(mongodbPath)
 }
 
 // 連接數據庫

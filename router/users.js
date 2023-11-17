@@ -3,6 +3,7 @@ const router = express.Router()
 const userController = require('../controller/userController')
 const {body,validationResult} =require('express-validator')
 const validator = require('../middleware/validator/userValidator')
+const {verifyToken}=require('../util/jwt')
 
 
 router
@@ -16,7 +17,9 @@ validator.register
 validator.login,
 // 連接數據庫進行校驗
 userController.login)
-.get('/userLists',userController.list)
+.get('/userLists',
+verifyToken,
+userController.list)
 
 
 module.exports = router

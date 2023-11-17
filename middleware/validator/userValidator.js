@@ -6,7 +6,11 @@ module.exports.register =validate([
     body('username')
     .notEmpty().withMessage('用戶名不能為空')
     .bail()
-    .isLength({min:3}).withMessage('長度必須至少3位'),
+    .isLength({min:3}).withMessage('用戶名長度必須至少3位'),
+    body('password')
+    .notEmpty().withMessage('密碼不能為空')
+    .bail()
+    .isLength({min:5}).withMessage('密碼長度必須至少5位'),
 
     body('email')
     .notEmpty().withMessage('郵箱不能為空').bail()
@@ -19,6 +23,7 @@ module.exports.register =validate([
         return Promise.reject('郵箱已被註冊')
        }
     }).bail(),
+
     body('phone')
     .notEmpty().withMessage('手機號碼不能為空').bail()
     .custom(async val => {
@@ -39,7 +44,15 @@ module.exports.register =validate([
 module.exports.login = validate([
     body('email')
     .notEmpty().withMessage('郵箱不能為空').bail()
-    .isEmail().withMessage('郵箱格式不正確').bail(),
+    .isEmail().withMessage('郵箱格式不正確').bail()
+    .custom(async val => {
+        // 執行以下語句，將返回一條根據條件查詢到的結果（如有），沒有就是null
+       const result = await User.findOne({email:val})
+       if(!result){
+        // 如果找不到結果，並返回提示給客戶端
+        return Promise.reject('郵箱未被註冊')
+       }
+    }).bail(),
    
     body('password')
     .notEmpty().withMessage('密碼不能為空').bail()

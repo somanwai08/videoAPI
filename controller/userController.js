@@ -1,6 +1,6 @@
 // 引入用戶註冊數據集合
 const {User}= require('../model/index')
-const jwt = require('jsonwebtoken')
+const {createToken}=require('../util/jwt')
 
 // 用戶註冊
 exports.register = async (req,res)=>{
@@ -32,7 +32,7 @@ exports.login = async(req,res)=>{
   }else{
     dbBack=dbBack.toJSON()
     // 簽發jwt
-    const token = jwt.sign(dbBack,'555')
+      const token = createToken(dbBack)
     // console.log(Token,'token');
     dbBack.token = token
      
