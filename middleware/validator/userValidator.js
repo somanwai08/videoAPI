@@ -10,7 +10,7 @@ module.exports.register =validate([
     body('password')
     .notEmpty().withMessage('密碼不能為空')
     .bail()
-    .isLength({min:5}).withMessage('密碼長度必須至少5位'),
+    .isLength({min:3}).withMessage('密碼長度必須至少3位'),
 
     body('email')
     .notEmpty().withMessage('郵箱不能為空').bail()
@@ -50,10 +50,43 @@ module.exports.login = validate([
        const result = await User.findOne({email:val})
        if(!result){
         // 如果找不到結果，並返回提示給客戶端
-        return Promise.reject('郵箱未被註冊')
+        return Promise.reject('郵箱未註冊')
        }
     }).bail(),
    
     body('password')
     .notEmpty().withMessage('密碼不能為空').bail()
+]) 
+
+module.exports.update = validate([
+    body('email')
+    .custom(async val => {
+        // 執行以下語句，將返回一條根據條件查詢到的結果（如有），沒有就是null
+       const result = await User.findOne({email:val})
+       if(result){
+        // 如果找到結果，並返回提示給客戶端
+        return Promise.reject('郵箱已註冊')
+       }else{
+        // 沒有找到結果，可能就是沒有
+       }
+    }).bail(),
+   
+    body('username')
+    .custom(async val => {
+        // 執行以下語句，將返回一條根據條件查詢到的結果（如有），沒有就是null
+       const result = await User.findOne({username:val})
+       if(result){
+        // 如果找到結果，並返回提示給客戶端
+        return Promise.reject('用戶名已註冊')
+       }
+    }).bail(),
+    body('phone')
+    .custom(async val => {
+        // 執行以下語句，將返回一條根據條件查詢到的結果（如有），沒有就是null
+       const result = await User.findOne({phone:val})
+       if(result){
+        // 如果找到結果，並返回提示給客戶端
+        return Promise.reject('手機已註冊')
+       }
+    }).bail()
 ]) 

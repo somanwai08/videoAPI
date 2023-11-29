@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const userModel = require('./userModel')
+const videoModel = require('./videoModel')
 const {mongodbPath}=require('../config/config.default')
 
 async function main(){
@@ -15,7 +16,9 @@ main().then(res=>{console.log('successfull');}).catch(err=>{
 
 // 創建集合
 const user_Model = mongoose.model('User',userModel)
+const video_Model = mongoose.model('Video',videoModel)
 
 module.exports = {
-    User:user_Model
+    User:user_Model,
+    Video:video_Model
 }

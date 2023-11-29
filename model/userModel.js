@@ -26,5 +26,13 @@ module.exports = new mongoose.Schema({
         type:String,
         required:true,
     },
+    cover:{
+        type:String,
+        default:null
+    },
+    channeldes:{
+        type:String,
+        default:null
+    },
     ...baseModel
 })
