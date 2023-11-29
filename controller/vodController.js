@@ -15,7 +15,7 @@ function initVodClient(accessKeyId,accessKeySecret){
 
 exports.getvod = async (req,res)=>{
 
-     var client = initVodClient('LTAI5tQAFchvQQzsv5tmWaKs','w1l5I6r71yBXmuN5MW5fOoDFGInBnd')
+     var client = initVodClient('LTAI5tQA','w1l5I6r71')
 
     const vodback =  await client.request("CreateUploadVideo",{
         Title:'this is a sample',
