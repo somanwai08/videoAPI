@@ -6,10 +6,18 @@ const { verifyToken } = require('../util/jwt')
 const {videoValidator} = require('../middleware/validator/videoValidator')
 
 router
+.delete('/deletecomment/:videoId/:commentId',verifyToken(),videoController.deleteComments)
+.get('/commentlist/:videoId',videoController.getCommentList)
+.post('/comment/:videoId',verifyToken(),videoController.addComments)
 .get('/videolists', videoController.videoList)
-.get('/playlists',videoController.playList)
-.get('/getvod',verifyToken,vodController.getvod)
-.post('/createvideo',verifyToken,videoValidator,videoController.createVideo)
+.get('/video/:videoId',verifyToken(false),videoController.video)
+.get('/getvod',
+verifyToken(),
+vodController.getvod)
+.post('/createvideo',verifyToken(),videoValidator,videoController.createVideo)
+.post('/likevideo/:videoId',verifyToken(),videoController.likeVideo)
+.post('/unlikeVideo/:videoId',verifyToken(),videoController.unlikeVideo)
+
 
 
 module.exports=router

@@ -19,14 +19,33 @@ validator.login,
 // 連接數據庫進行校驗
 userController.login)
 .post('/headimg',
-verifyToken,
+verifyToken(),
 upload.single('headimg'),
 // 連接數據庫進行校驗
 userController.headimg)
 .get('/userLists',
-verifyToken,
+verifyToken(),
 userController.list)
+// 訂閱頻道
+.get('/subscribe/:userId',
+verifyToken(),
+userController.subscribe)
 .put('/',verifyToken,validator.update,userController.update)
+// 取消訂閱頻道
+.get('/unsubscribe/:userId',
+verifyToken(),
+userController.unsubscribe)
+// 獲取頻道（用戶）信息
+.get('/getuser/:userId',
+verifyToken(false),
+userController.getUser)
+// 獲取用戶關注列表
+.get('/getsubscribe/:userId',
+userController.getSubscribe)
+// 獲取用戶粉絲列表（老師的路由是getchannels）
+.get('/getfans',
+verifyToken(),
+userController.getFans)
 
 
 module.exports = router

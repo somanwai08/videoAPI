@@ -34,5 +34,9 @@ module.exports = new mongoose.Schema({
         type:String,
         default:null
     },
+    subscribrCount:{
+        type:Number,
+        default:0
+    },
     ...baseModel
 })

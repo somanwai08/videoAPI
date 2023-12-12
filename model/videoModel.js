@@ -25,5 +25,17 @@ module.exports = new mongoose.Schema({
     type:String,
     required:false
    },
+   commentCount:{
+      type:Number,
+      default:0
+   },
+   like:{
+     type:Number,
+     default:0
+   },
+   unlike:{
+      type:Number,
+     default:0
+   },
     ...baseModel
 })
