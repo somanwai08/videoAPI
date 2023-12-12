@@ -29,4 +29,3 @@ exports.getvod = async (req,res)=>{
      res.status(200).json({vod:vodback})
     
 }
-
