@@ -38,6 +38,6 @@ module.exports.verifyToken = function(required=true){
 }
 
 module.exports.createToken= (dbBack)=>{
-       return jwt.sign(dbBack,uuid,{expiresIn:'1h'})
+       return jwt.sign(dbBack,uuid,{expiresIn:'4h'})
 }
 

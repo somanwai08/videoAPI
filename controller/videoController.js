@@ -1,4 +1,5 @@
-const {Video, VideoComments, VideoLike}=require('../model/index')
+const {Video, VideoComments, VideoLike, Subscribe}=require('../model/index');
+const videoLike = require('../model/videoLike');
 
 exports.videoList = async (req,res)=>{
     const {pageNum=1,pageSize=10 }=req.body
@@ -38,16 +39,35 @@ exports.createVideo = async (req,res) => {
 }
 
 exports.video = async(req,res)=>{
-
-    console.log(req.params,'params');
-
     const {videoId}=req.params
      console.log(videoId,'videoId');
-const dbBack = await Video.find({vodvideoId:videoId})
+let videoInfo = await Video.findOne({_id:videoId})
                           .populate('user','_id username cover')
-    console.log(dbBack,'dbBack');
+                        
+        
+        videoInfo = videoInfo.toJSON()
+        videoInfo.isLike = false
+        videoInfo.isDislike = false
+        videoInfo.isSubscribe = false
 
-    res.status(200).json({videoInfo:dbBack})
+        if(req.user){
+            const user = req.user._id
+            console.log(user,'user');
+            const result = await VideoLike.findOne({user,video:videoId,like:1})
+            console.log(result,'result');
+            if(await VideoLike.findOne({user,video:videoId,like:1})){
+                      videoInfo.isLike=true
+            }
+            if(await VideoLike.findOne({user,video:videoId,like:-1})){
+                videoInfo.isDislike=true
+            }
+            if(await Subscribe.findOne({user,channel:videoId})){
+                videoInfo.isSubscribe=true
+            }
+        }
+
+       console.log(videoInfo,'videoInfo');
+    res.status(200).json({videoInfo:videoInfo})
 
 
 }
@@ -229,4 +249,44 @@ exports.unlikeVideo = async(req,res)=>{
     
 }
 
+exports.likeList = async(req,res)=>{
+    const user = req.user._id
+    const {pageNum=1,pageSize=10}=req.body
+    console.log(req.body,'pageSize');
+    const list = await VideoLike.find({
+        user,
+        like:1
+    }).skip((pageNum-1)*pageSize).limit(pageSize)
+                                 .populate('video','title commentCount like unlike')
+    const likeCount = await VideoLike.countDocuments({
+        user,
+        like:1
+    })
 
+    console.log(likeCount,'likeCount');
+
+    res.status(200).json({likeList:list,likeCount})
+}
+
+exports.addDescription = async(req,res)=>{
+    
+    console.log(req.user,'req.user');
+    const user = req.user._id
+    const videoId = req.params.videoId
+    const content = req.body.content
+    // 根據videoId查找數據庫看看是否有這一條視屏
+    const hasVideo = await Video.find({_id:videoId})
+
+    // 如果有，往數據庫添加數據
+        //  視頻評論數+1
+        if(hasVideo){ 
+           const video = await Video.findById({_id:videoId})
+        //    video.commentCount++
+        video.description = content
+           video.save()
+           res.status(200).json({message:'添加視頻描述成功！'})
+        }else{
+            return res.status(404).json({message:"沒有找到該視頻！"})
+        }
+    
+}
