@@ -1,5 +1,6 @@
-const {Video, VideoComments, VideoLike, Subscribe}=require('../model/index');
+const {Video, VideoComments, VideoLike, Subscribe, VideoCollect}=require('../model/index');
 const videoLike = require('../model/videoLike');
+const {hotInc, topHots}=require('../model/Redis/redishotsinc')
 
 exports.videoList = async (req,res)=>{
     const {pageNum=1,pageSize=10 }=req.body
@@ -93,6 +94,7 @@ exports.addComments = async(req,res)=>{
            const video = await Video.findById({_id:videoId})
            video.commentCount++
            video.save()
+           hotInc(videoId,2)
            res.status(200).json({message:'添加評論成功！'})
         }else{
             return res.status(404).json({message:"沒有找到該視頻！"})
@@ -173,12 +175,14 @@ exports.likeVideo = async(req,res)=>{
         // 視頻的like數加1
          video.like++
          video.save()
+         await hotInc(videoId,2)
          return res.status(200).json({msg:'成功讚好視頻！',video})
        }else if(record.like === 1){
             // 如果有like過這條片，取消這條記錄
             await VideoLike.deleteOne({user:userId,video:videoId,like:1})
             video.like--
             video.save()
+            await hotInc(videoId,-2)
             return res.status(200).json({msg:'已經取消讚好視頻',video})
        }else if(record.like === -1 ){
             // 如果有unlike這條片，改成like
@@ -190,6 +194,7 @@ exports.likeVideo = async(req,res)=>{
             // await video.save()
             video.like++
            await video.save()
+           await hotInc(videoId,2)
             return res.status(200).json({msg:'成功讚好視頻！!!',video})
        }
        
@@ -289,4 +294,44 @@ exports.addDescription = async(req,res)=>{
             return res.status(404).json({message:"沒有找到該視頻！"})
         }
     
+}
+
+exports.collectVideo = async(req,res)=>{
+         const userId = req.user._id
+         const videoId = req.params.videoId
+
+         const hasVideo = await Video.findById(videoId)
+
+         if(!hasVideo){
+           return res.status(404).json({msg:"你收藏的視頻不存在！"})
+         }
+
+        const hasResult = await VideoCollect.findOne({
+            user:userId,
+            video:videoId
+         })
+
+         if(hasResult){
+           return res.status(403).json({msg:"已收藏過該視頻！"})
+         }else{
+                   const writeResult =   await new VideoCollect({
+                        user:userId,
+                        video:videoId
+                      }).save()
+                      if(writeResult){
+                      await  hotInc(videoId,3)
+                      }
+                      
+                      res.status(200).json({msg:"收藏成功"})
+                      
+         }
+
+}
+
+exports.getHots = async (req,res)=>{
+     let num = req.params.topNum
+     console.log(num,'num');
+     const rank = await topHots(num)
+     console.log(rank,'rank');
+     res.status(200).json({rank})
 }

@@ -4,6 +4,7 @@ const videoModel = require('./videoModel')
 const subscribeModel = require('./subscribeModel')
 const videoCommentsModel = require('./videoCommentModel')
 const videoLikeModel = require('./videoLike')
+const videoCollectModel = require('./collectVideoModel')
 const {mongodbPath}=require('../config/config.default')
 
 async function main(){
@@ -23,11 +24,13 @@ const video_Model = mongoose.model('Video',videoModel)
 const subscribe_Model = mongoose.model('SubscribeRecords',subscribeModel)
 const videoComment_Model = mongoose.model('VideoComments',videoCommentsModel )
 const videoLike_Model = mongoose.model('videoLike',videoLikeModel)
+const collectVideo_Model = mongoose.model('CollectVideo',videoCollectModel)
 
 module.exports = {
     User:user_Model,
     Video:video_Model,
     Subscribe:subscribe_Model,
     VideoComments:videoComment_Model,
-    VideoLike:videoLike_Model
+    VideoLike:videoLike_Model,
+    VideoCollect:collectVideo_Model
 }

@@ -20,9 +20,10 @@ vodController.deleteVideo)
 vodController.getvod)
 .post('/createvideo',verifyToken(),videoValidator,videoController.createVideo)
 .post('/likevideo/:videoId',verifyToken(),videoController.likeVideo)
+.post('/collectvideo/:videoId',verifyToken(),videoController.collectVideo)
 .post('/unlikeVideo/:videoId',verifyToken(),videoController.unlikeVideo)
 .get('/likelist',verifyToken(),videoController.likeList)
-
+.get('/gethots/:topNum',videoController.getHots)
 
 
 
